@@ -14,7 +14,6 @@
     <p class="state-message">Historie je zatím prázdná.</p>
   } @else {
     <div class="filter-toolbar">
-      <!-- Bonus 3: Vyhledávání -->
       <ion-searchbar
         [ngModel]="searchQuery()"
         (ngModelChange)="searchQuery.set($event)"
@@ -22,7 +21,6 @@
         [debounce]="100"
       ></ion-searchbar>
 
-      <!-- Bonus 2: Řazení -->
       <ion-item lines="none" class="sort-item">
         <ion-select
           label="Řadit podle:"
@@ -41,11 +39,15 @@
     <div class="history-header">
       <div>
         <p>Počet záznamů: {{ filteredCounters().length }} z {{ counterService.counters().length }}</p>
-        <!-- Bonus 1: Celkový součet -->
         <p><strong>Součet hodnot: {{ totalSum() }}</strong></p>
+        <!-- Varianta C: Zobrazení počtu kladných, záporných a nulových hodnot -->
+        <p>
+          Kladné: <strong>{{ valueStats().positive }}</strong> | 
+          Záporné: <strong>{{ valueStats().negative }}</strong> | 
+          Nulové: <strong>{{ valueStats().zero }}</strong>
+        </p>
       </div>
 
-      <!-- Bonus 4: Vyvolá potvrzovací alert -->
       <ion-button color="danger" fill="outline" size="small" (click)="clear()">
         Vymazat vše
       </ion-button>

@@ -49,16 +49,33 @@ export class Tab2Page implements OnInit {
   private readonly alertCtrl = inject(AlertController);
   private readonly toastCtrl = inject(ToastController);
 
-  // Signály pro vyhledávání a řazení
   readonly searchQuery = signal('');
   readonly sortBy = signal<SortOption>('newest');
 
-  // Bonus 1: Součet hodnot všech počítadel
   readonly totalSum = computed(() => {
     return this.counterService.counters().reduce((sum, item) => sum + item.value, 0);
   });
 
-  // Bonus 2 a 3: Filtrovaný a seřazený seznam
+  // Varianta C: Počet kladných, záporných a nulových hodnot
+  readonly valueStats = computed(() => {
+    const counters = this.counterService.counters();
+    let positive = 0;
+    let negative = 0;
+    let zero = 0;
+
+    for (const c of counters) {
+      if (c.value > 0) {
+        positive++;
+      } else if (c.value < 0) {
+        negative++;
+      } else {
+        zero++;
+      }
+    }
+
+    return { positive, negative, zero };
+  });
+
   readonly filteredCounters = computed(() => {
     const query = this.searchQuery().trim().toLowerCase();
     let items = this.counterService.counters();
@@ -78,7 +95,6 @@ export class Tab2Page implements OnInit {
       if (sort === 'valueDesc') {
         return b.value - a.value;
       }
-      // 'newest'
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
   });
@@ -87,7 +103,6 @@ export class Tab2Page implements OnInit {
     await this.counterService.initialize();
   }
 
-  // Bonus 5: Toast po smazání záznamu
   async remove(id: string): Promise<void> {
     await this.counterService.remove(id);
 
@@ -100,7 +115,6 @@ export class Tab2Page implements OnInit {
     await toast.present();
   }
 
-  // Bonus 4: Dialog před smazáním celé historie
   async clear(): Promise<void> {
     const alert = await this.alertCtrl.create({
       header: 'Vymazat celou historii?',
