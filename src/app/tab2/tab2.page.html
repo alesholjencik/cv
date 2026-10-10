@@ -13,34 +13,69 @@
   } @else if (counterService.counters().length === 0) {
     <p class="state-message">Historie je zatím prázdná.</p>
   } @else {
+    <div class="filter-toolbar">
+      <!-- Bonus 3: Vyhledávání -->
+      <ion-searchbar
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        placeholder="Hledat podle názvu…"
+        [debounce]="100"
+      ></ion-searchbar>
+
+      <!-- Bonus 2: Řazení -->
+      <ion-item lines="none" class="sort-item">
+        <ion-select
+          label="Řadit podle:"
+          [ngModel]="sortBy()"
+          (ngModelChange)="sortBy.set($event)"
+          interface="popover"
+        >
+          <ion-select-option value="newest">Nejnovější</ion-select-option>
+          <ion-select-option value="oldest">Nejstarší</ion-select-option>
+          <ion-select-option value="nameAsc">Název (A–Z)</ion-select-option>
+          <ion-select-option value="valueDesc">Hodnota (od nejvyšší)</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
     <div class="history-header">
-      <p>Počet záznamů: {{ counterService.counters().length }}</p>
+      <div>
+        <p>Počet záznamů: {{ filteredCounters().length }} z {{ counterService.counters().length }}</p>
+        <!-- Bonus 1: Celkový součet -->
+        <p><strong>Součet hodnot: {{ totalSum() }}</strong></p>
+      </div>
+
+      <!-- Bonus 4: Vyvolá potvrzovací alert -->
       <ion-button color="danger" fill="outline" size="small" (click)="clear()">
         Vymazat vše
       </ion-button>
     </div>
 
-    <ion-list>
-      @for (counter of counterService.counters(); track counter.id) {
-        <ion-item>
-          <ion-label>
-            <h2>{{ counter.name }}</h2>
-            <p>{{ counter.createdAt | date: 'd. M. y, HH:mm' }}</p>
-          </ion-label>
+    @if (filteredCounters().length === 0) {
+      <p class="state-message">Žádný záznam neodpovídá vyhledávání.</p>
+    } @else {
+      <ion-list>
+        @for (counter of filteredCounters(); track counter.id) {
+          <ion-item>
+            <ion-label>
+              <h2>{{ counter.name }}</h2>
+              <p>{{ counter.createdAt | date: 'd. M. y, HH:mm' }}</p>
+            </ion-label>
 
-          <ion-note slot="end">{{ counter.value }}</ion-note>
+            <ion-note slot="end">{{ counter.value }}</ion-note>
 
-          <ion-button
-            slot="end"
-            color="danger"
-            fill="clear"
-            aria-label="Odstranit záznam"
-            (click)="remove(counter.id)"
-          >
-            Odstranit
-          </ion-button>
-        </ion-item>
-      }
-    </ion-list>
+            <ion-button
+              slot="end"
+              color="danger"
+              fill="clear"
+              aria-label="Odstranit záznam"
+              (click)="remove(counter.id)"
+            >
+              Odstranit
+            </ion-button>
+          </ion-item>
+        }
+      </ion-list>
+    }
   }
 </ion-content>

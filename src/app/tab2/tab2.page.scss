@@ -1,3 +1,4 @@
+.filter-toolbar,
 .history-header,
 ion-list,
 .state-message {
@@ -5,11 +6,25 @@ ion-list,
   margin: 1rem auto;
 }
 
+.filter-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sort-item {
+  --background: transparent;
+}
+
 .history-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+}
+
+.history-header p {
+  margin: 0.2rem 0;
 }
 
 .state-message {
